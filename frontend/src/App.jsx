@@ -43,15 +43,14 @@ export default function App() {
           window.gsap.registerPlugin(window.ScrollTrigger);
           setScriptsLoaded(true); // Mark scripts as loaded
         }
-        
-        // Fetch data from the live backend API
-        fetch('http://localhost:3001/api/data')
+        // In App.jsx
+        fetch(`${import.meta.env.VITE_API_URL}/api/data`)
           .then(response => {
             if (!response.ok) {
                 throw new Error(`Network response was not ok: ${response.statusText}`);
             }
             return response.json();
-          })
+          })     
           .then(data => {
             // Convert icon strings from API to React components
             if (data && data.services && data.process) {
@@ -793,7 +792,7 @@ const ContactPage = ({ data }) => {
     setSubmitStatus(null);
 
     try {
-        const response = await fetch('http://localhost:3001/api/contact', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contact`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

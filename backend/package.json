@@ -1,4 +1,7 @@
 {
+"scripts": {
+  "start": "node index.js"
+},
   "dependencies": {
     "@sanity/client": "^7.6.0",
     "cors": "^2.8.5",
