@@ -2,6 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Menu, X, Code, Smartphone, Cloud, Server, Gamepad2, Briefcase, Loader, Search, PenTool, Code2, Rocket, Facebook, Linkedin } from 'lucide-react';
 import * as THREE from 'three';
+import ParticleLogoAnimation from './components/ParticleLogoAnimation';
+import './styles/ParticleLogoAnimation.css';
+
+
 // GSAP and ScrollTrigger are now loaded via a script loader to prevent import conflicts.
 
 // Icon mapping to convert string names from the API to actual components
@@ -320,129 +324,15 @@ const HomePage = ({ navigateTo, data }) => {
   );
 };
 
-// Advanced Three.js Particle Animation Component
-const ThreeDAnimation = () => {
-    const mountRef = useRef(null);
-    const mouse = useRef({ x: 0, y: 0 });
-
-    useEffect(() => {
-        const currentMount = mountRef.current; // Capture mount point
-
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
-        camera.position.z = 3;
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        currentMount.appendChild(renderer.domElement);
-
-        const particleCount = 10000;
-        const positions = new Float32Array(particleCount * 3);
-        const colors = new Float32Array(particleCount * 3);
-        const color1 = new THREE.Color("#5e72e4");
-        const color2 = new THREE.Color("#8965e0");
-
-        for (let i = 0; i < particleCount; i++) {
-            const i3 = i * 3;
-            const radius = Math.random() * 2 + 1;
-            const phi = Math.acos(2 * Math.random() - 1);
-            const theta = Math.random() * Math.PI * 2;
-            positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
-            positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-            positions[i3 + 2] = radius * Math.cos(phi);
-            const mixedColor = color1.clone().lerp(color2, (positions[i3 + 1] + 1.5) / 3);
-            colors[i3] = mixedColor.r;
-            colors[i3 + 1] = mixedColor.g;
-            colors[i3 + 2] = mixedColor.b;
-        }
-
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        
-        const material = new THREE.PointsMaterial({
-            size: 0.015, // Particle size reduced from 0.025
-            vertexColors: true,
-            blending: THREE.AdditiveBlending,
-            transparent: true,
-            opacity: 0.8,
-            depthWrite: false,
-        });
-
-        const particles = new THREE.Points(geometry, material);
-        scene.add(particles);
-        
-        const originalPositions = new Float32Array(positions);
-
-        const handleMouseMove = (event) => {
-            mouse.current.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        };
-        window.addEventListener('mousemove', handleMouseMove);
-        
-        const handleResize = () => {
-            if (currentMount) {
-                const width = currentMount.clientWidth;
-                const height = currentMount.clientHeight;
-                camera.aspect = width / height;
-                camera.updateProjectionMatrix();
-                renderer.setSize(width, height);
-            }
-        };
-        window.addEventListener('resize', handleResize);
-
-        const clock = new THREE.Clock();
-        let animationFrameId;
-        
-        const animate = () => {
-            animationFrameId = requestAnimationFrame(animate);
-            const elapsedTime = clock.getElapsedTime();
-            
-            for (let i = 0; i < particleCount; i++) {
-                const i3 = i * 3;
-                const x = geometry.attributes.position.getX(i);
-                const y = geometry.attributes.position.getY(i);
-                const waveX = Math.sin(elapsedTime * 0.5 + x * 0.5) * 0.1;
-                const waveY = Math.cos(elapsedTime * 0.5 + y * 0.5) * 0.1;
-                const mouseVector = new THREE.Vector2(mouse.current.x * 2, mouse.current.y * 2);
-                const particleVector = new THREE.Vector2(x, y);
-                const dist = mouseVector.distanceTo(particleVector);
-                const force = Math.max(0, 1 - dist * 2);
-                const angle = mouseVector.sub(particleVector).angle();
-                const pushX = Math.cos(angle) * force * -0.2;
-                const pushY = Math.sin(angle) * force * -0.2;
-                geometry.attributes.position.setX(i, THREE.MathUtils.lerp(x, originalPositions[i3] + waveX + pushX, 0.1));
-                geometry.attributes.position.setY(i, THREE.MathUtils.lerp(y, originalPositions[i3 + 1] + waveY + pushY, 0.1));
-            }
-            geometry.attributes.position.needsUpdate = true;
-            particles.rotation.y = elapsedTime * 0.05;
-            renderer.render(scene, camera);
-        };
-        animate();
-
-        return () => {
-            cancelAnimationFrame(animationFrameId);
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('resize', handleResize);
-            if (currentMount && renderer.domElement) {
-                currentMount.removeChild(renderer.domElement);
-            }
-            geometry.dispose();
-            material.dispose();
-            renderer.dispose();
-        };
-    }, []);
-
-    return <div ref={mountRef} className="absolute top-0 left-0 w-full h-full z-0" />;
-};
 
 
-// Hero Section
+
+
 const HeroSection = ({ navigateTo, heroData }) => {
   return (
     <section className="min-h-screen flex items-center justify-center bg-grid-gray-700/[0.2] relative pt-24 md:pt-0 overflow-hidden">
        <div className="absolute pointer-events-none inset-0 flex items-center justify-center bg-gray-900 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
-       <ThreeDAnimation />
+       <ParticleLogoAnimation /> {/* Use the new component here */}
       <div className="container mx-auto px-6 text-center z-10">
         <motion.h1 
           className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500"
