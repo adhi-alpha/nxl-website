@@ -4,6 +4,8 @@ import { ArrowRight, Menu, X, Code, Smartphone, Cloud, Server, Gamepad2, Briefca
 import * as THREE from 'three';
 import ParticleLogoAnimation from './components/ParticleLogoAnimation';
 import './styles/ParticleLogoAnimation.css';
+import HeroParticles from "./components/HeroParticles";
+
 
 
 // GSAP and ScrollTrigger are now loaded via a script loader to prevent import conflicts.
@@ -323,8 +325,6 @@ const HomePage = ({ navigateTo, data }) => {
     </>
   );
 };
-
-
 
 
 
